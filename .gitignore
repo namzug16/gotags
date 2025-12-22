@@ -1,0 +1,55 @@
+# =========================
+# Go build artifacts
+# =========================
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+*.test
+*.out
+*.coverprofile
+
+# =========================
+# Go tooling & caches
+# =========================
+# Old GOPATH workspace artifacts (harmless if unused)
+pkg/
+
+# Delve debugger
+__debug_bin
+__debug_bin*
+
+# =========================
+# macOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+.Spotlight-V100
+.Trashes
+
+# =========================
+# Editors / IDEs
+# =========================
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# JetBrains
+.idea/
+*.iml
+
+# Vim / Neovim
+*.swp
+*.swo
+*.swn
+*~
+
+# =========================
+# Misc
+# =========================
+tmp/
