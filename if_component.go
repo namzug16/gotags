@@ -1,8 +1,8 @@
 package gotags
 
 type IfComponent struct {
-	condition        bool
-	components       []HTML
+	condition  bool
+	components []HTML
 }
 
 func (d *IfComponent) String() string {
@@ -11,7 +11,7 @@ func (d *IfComponent) String() string {
 
 func If(condition bool, components ...HTML) *IfComponent {
 	return &IfComponent{
-		condition:        condition,
-		components:       components,
+		condition:  condition,
+		components: components,
 	}
 }

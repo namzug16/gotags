@@ -3,13 +3,13 @@ package gotags
 import "strings"
 
 type FragmentComponent struct {
-	Components []HTML
+	components []HTML
 }
 
 func (f *FragmentComponent) String() string {
 	var sb strings.Builder
 
-	for _, c := range f.Components {
+	for _, c := range f.components {
 		sb.WriteString(c.String())
 	}
 
@@ -18,6 +18,6 @@ func (f *FragmentComponent) String() string {
 
 func Fragment(components ...HTML) *FragmentComponent {
 	return &FragmentComponent{
-		Components: components,
+		components: components,
 	}
 }

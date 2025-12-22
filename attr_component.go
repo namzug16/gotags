@@ -7,7 +7,7 @@ import (
 )
 
 type AttributeComponent struct {
-	name  string
+	name   string
 	values []string
 }
 
