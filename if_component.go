@@ -6,7 +6,9 @@ type IfComponent struct {
 }
 
 func (d *IfComponent) String() string {
-	return Fragment(d.components...).String()
+	// IfComponent cannot be composed directly because it may conditionally
+	// contribute tags or attributes. It must be added to a TagComponent.
+	panic("IfComponent cannot be composed directly; add it to a tag via AddToTag")
 }
 
 func If(condition bool, components ...HTML) *IfComponent {
