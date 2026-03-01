@@ -8,11 +8,13 @@ func normalizeContent(tag string, content []any) []HTML {
 		switch v := c.(type) {
 		case HTML:
 			res = append(res, v)
+		case []HTML:
+			res = append(res, v...)
 		case string:
 			res = append(res, Text(v))
 		default:
 			panic(fmt.Sprintf(
-				"gotags: invalid child type %T in <%s>; expected string or HTML",
+				"gotags: invalid child type %T in <%s>; expected string, HTML or []HTML",
 				c,
 				tag,
 			))
