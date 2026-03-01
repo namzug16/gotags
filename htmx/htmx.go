@@ -75,8 +75,8 @@ func Delete(value string) gt.HTML {
 }
 
 // Disables htmx processing for the given node and any children nodes
-func Disable(value string) gt.HTML {
-	return gt.X.Attr("hx-disable", value)
+func Disable() gt.HTML {
+	return gt.X.Attr("hx-disable")
 }
 
 // Adds the disabled attribute to the specified elements while a request is in flight

@@ -2,7 +2,6 @@ package gotags
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 )
 
@@ -69,20 +68,18 @@ func TestRangeMapperCanReturnDifferentComponentKinds(t *testing.T) {
 }
 
 func TestRangeMapperNilFunctionPanicsOnString(t *testing.T) {
-	r := Range([]int{1}, nil)
-
 	defer func() {
 		recovered := recover()
 		if recovered == nil {
 			t.Fatal("expected panic when mapper is nil")
 		}
 
-		if !strings.Contains(fmt.Sprint(recovered), "nil") {
-			t.Fatalf("expected nil-function panic, got: %v", recovered)
+		if recovered != "Range: toComponent mapper cannot be nil" {
+			t.Fatalf("unexpected panic message: %v", recovered)
 		}
 	}()
 
-	_ = r.String()
+	_ = Range([]int{1}, nil)
 }
 
 func TestRangeMapperReturningNilHTMLPanicsOnString(t *testing.T) {
@@ -94,6 +91,10 @@ func TestRangeMapperReturningNilHTMLPanicsOnString(t *testing.T) {
 		recovered := recover()
 		if recovered == nil {
 			t.Fatal("expected panic when mapper returns nil HTML")
+		}
+
+		if recovered != "Range: mapper returned nil HTML at index 0" {
+			t.Fatalf("unexpected panic message: %v", recovered)
 		}
 	}()
 
