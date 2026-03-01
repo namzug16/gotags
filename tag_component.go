@@ -60,7 +60,7 @@ func AddToTag(target HTML, components ...HTML) HTML {
 		case *AttributeComponent:
 			t.attrs = append(t.attrs, v)
 		case *IfComponent:
-			AddToTag(t, v.components...)
+			v.AddToTag(t)
 		default:
 			t.children = append(t.children, c)
 		}

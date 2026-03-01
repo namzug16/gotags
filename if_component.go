@@ -5,6 +5,14 @@ type IfComponent struct {
 	components []HTML
 }
 
+func (d *IfComponent) AddToTag(target HTML) HTML {
+	if !d.condition {
+		return target
+	}
+
+	return AddToTag(target, d.components...)
+}
+
 func (d *IfComponent) String() string {
 	// IfComponent cannot be composed directly because it may conditionally
 	// contribute tags or attributes. It must be added to a TagComponent.
