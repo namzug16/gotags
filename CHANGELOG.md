@@ -1,4 +1,7 @@
 
+## v0.1.2
+- Fix `If` composition handling in `Fragment`
+
 ## v0.1.1
 - Fix `If` condition handling and add edge-case coverage
 - Fix `IfComponent` attribute composition as tags
