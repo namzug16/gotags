@@ -1,27 +1,23 @@
 package gotags
 
-type IfComponent struct {
-	condition  bool
-	components []HTML
-}
+func If(condition bool, components ...any) []HTML {
+	if condition {
+		content, err := normalizeContent(components)
 
-func (d *IfComponent) AddToTag(target HTML) HTML {
-	if !d.condition {
-		return target
+		if err != nil {
+			panic("")
+		}
+
+		return content
 	}
 
-	return AddToTag(target, d.components...)
+	return []HTML{}
 }
 
-func (d *IfComponent) String() string {
-	// IfComponent cannot be composed directly because it may conditionally
-	// contribute tags or attributes. It must be added to a TagComponent.
-	panic("IfComponent cannot be composed directly; add it to a tag via AddToTag")
-}
-
-func If(condition bool, components ...HTML) *IfComponent {
-	return &IfComponent{
-		condition:  condition,
-		components: components,
+func IfLazy(condition bool, component func() HTML) HTML {
+	if condition {
+		return component()
 	}
+
+	return Fragment()
 }

@@ -102,7 +102,7 @@ func TestFragmentTypedNilComponentPanicsOnString(t *testing.T) {
 	_ = f.String()
 }
 
-func TestFragmentWithIfComponentTrueRendersConditionalChildren(t *testing.T) {
+func TestFragmentWithIfTrueRendersConditionalChildren(t *testing.T) {
 	got := Fragment(
 		Text("before"),
 		If(true, Text("visible")),
@@ -115,7 +115,7 @@ func TestFragmentWithIfComponentTrueRendersConditionalChildren(t *testing.T) {
 	}
 }
 
-func TestFragmentWithIfComponentFalseSkipsConditionalChildren(t *testing.T) {
+func TestFragmentWithIfFalseSkipsConditionalChildren(t *testing.T) {
 	got := Fragment(
 		Text("before"),
 		If(false, Text("hidden")),
@@ -126,6 +126,144 @@ func TestFragmentWithIfComponentFalseSkipsConditionalChildren(t *testing.T) {
 	if got != want {
 		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
 	}
+}
+
+func TestFragmentWithIfTrueRendersConditionalTag(t *testing.T) {
+	got := Fragment(
+		Text("before"),
+		If(true, Span("visible")),
+		Text("after"),
+	).String()
+
+	want := `before<span>visible</span>after`
+	if got != want {
+		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+	}
+}
+
+func TestFragmentWithIfFalseSkipsConditionalTag(t *testing.T) {
+	got := Fragment(
+		Text("before"),
+		If(false, Span("hidden")),
+		Text("after"),
+	).String()
+
+	want := `beforeafter`
+	if got != want {
+		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+	}
+}
+
+func TestFragmentWithIfLazyTrueRendersConditionalChild(t *testing.T) {
+	got := Fragment(
+		Text("before"),
+		IfLazy(true, func() HTML { return Span("visible") }),
+		Text("after"),
+	).String()
+
+	want := `before<span>visible</span>after`
+	if got != want {
+		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+	}
+}
+
+func TestFragmentWithIfLazyFalseSkipsCallback(t *testing.T) {
+	called := false
+
+	got := Fragment(
+		Text("before"),
+		IfLazy(false, func() HTML {
+			called = true
+			return Span("hidden")
+		}),
+		Text("after"),
+	).String()
+
+	want := `beforeafter`
+	if called {
+		t.Fatal("expected callback to not run when condition is false")
+	}
+
+	if got != want {
+		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+	}
+}
+
+func TestFragmentAttributePanicsOnString(t *testing.T) {
+	f := Fragment(X.Class("container"))
+
+	defer func() {
+		recovered := recover()
+		if recovered == nil {
+			t.Fatal("expected panic when Fragment contains an attribute")
+		}
+
+		want := "AttributeComponent cannot be rendered in Fragment"
+		if recovered != want {
+			t.Fatalf("unexpected panic message:\nwant: %q\ngot:  %v", want, recovered)
+		}
+	}()
+
+	_ = f.String()
+}
+
+func TestFragmentWithIfAttributeHandling(t *testing.T) {
+	t.Run("true panics when conditional child is attribute", func(t *testing.T) {
+		f := Fragment(
+			Text("before"),
+			If(true, X.Class("container")),
+			Text("after"),
+		)
+
+		defer func() {
+			recovered := recover()
+			if recovered == nil {
+				t.Fatal("expected panic when true If in Fragment contains an attribute")
+			}
+
+			want := "AttributeComponent cannot be rendered in Fragment"
+			if recovered != want {
+				t.Fatalf("unexpected panic message:\nwant: %q\ngot:  %v", want, recovered)
+			}
+		}()
+
+		_ = f.String()
+	})
+
+	t.Run("false skips conditional attribute", func(t *testing.T) {
+		got := Fragment(
+			Text("before"),
+			If(false, X.Class("container")),
+			Text("after"),
+		).String()
+
+		want := `beforeafter`
+		if got != want {
+			t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+		}
+	})
+
+	t.Run("if lazy true panics when conditional child is attribute", func(t *testing.T) {
+		f := Fragment(
+			Text("before"),
+			IfLazy(true, func() HTML { return X.Class("container") }),
+			Text("after"),
+		)
+
+		defer func() {
+			recovered := recover()
+			if recovered == nil {
+				t.Fatal("expected panic when true IfLazy in Fragment contains an attribute")
+			}
+
+			want := "AttributeComponent cannot be rendered in Fragment"
+			if recovered != want {
+				t.Fatalf("unexpected panic message:\nwant: %q\ngot:  %v", want, recovered)
+			}
+		}()
+
+		_ = f.String()
+	})
 }
 
 func TestFragmentWithDeeplyNestedFragments(t *testing.T) {
@@ -200,7 +338,7 @@ func TestFragmentWithNestedFragmentInsideTag(t *testing.T) {
 	}
 }
 
-func TestFragmentWithNestedFragmentAndIfComponents(t *testing.T) {
+func TestFragmentWithNestedFragmentAndIf(t *testing.T) {
 	got := Fragment(
 		Text("a"),
 		Fragment(

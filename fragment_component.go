@@ -12,13 +12,8 @@ func (f *FragmentComponent) String() string {
 	var sb strings.Builder
 
 	for _, c := range f.components {
-		ifComp, ok := c.(*IfComponent)
-		if ok {
-			if ifComp.condition {
-				sb.WriteString(Fragment(ifComp.components).String())
-			}
-
-			continue
+		if _, ok := c.(*AttributeComponent); ok {
+			panic("AttributeComponent cannot be rendered in Fragment")
 		}
 
 		sb.WriteString(c.String())
