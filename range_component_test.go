@@ -10,11 +10,13 @@ func TestRangeRendersItemsInOrderWithIndex(t *testing.T) {
 
 	got := Range(items, func(index int, item string) HTML {
 		return Li(fmt.Sprintf("%d:%s", index, item))
-	}).String()
+	})
+
+	rendered := Fragment(got).String()
 
 	want := `<li>0:alpha</li><li>1:beta</li><li>2:gamma</li>`
-	if got != want {
-		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+	if rendered != want {
+		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, rendered)
 	}
 }
 
@@ -24,14 +26,14 @@ func TestRangeEmptySliceDoesNotInvokeMapper(t *testing.T) {
 	got := Range([]int{}, func(index int, item int) HTML {
 		called = true
 		return Text("unexpected")
-	}).String()
+	})
 
 	if called {
 		t.Fatal("expected mapper not to be called for empty slice")
 	}
 
-	if got != "" {
-		t.Fatalf("expected empty output for empty slice, got %q", got)
+	if len(got) != 0 {
+		t.Fatalf("expected empty output for empty slice, got %v", got)
 	}
 }
 
@@ -42,14 +44,14 @@ func TestRangeNilSliceDoesNotInvokeMapper(t *testing.T) {
 	got := Range(items, func(index int, item string) HTML {
 		called = true
 		return Text("unexpected")
-	}).String()
+	})
 
 	if called {
 		t.Fatal("expected mapper not to be called for nil slice")
 	}
 
-	if got != "" {
-		t.Fatalf("expected empty output for nil slice, got %q", got)
+	if len(got) != 0 {
+		t.Fatalf("expected empty output for nil slice, got %v", got)
 	}
 }
 
@@ -59,15 +61,17 @@ func TestRangeMapperCanReturnDifferentComponentKinds(t *testing.T) {
 			return Raw("<em>even</em>")
 		}
 		return Text("odd")
-	}).String()
+	})
+
+	rendered := Fragment(got).String()
 
 	want := `odd<em>even</em>odd`
-	if got != want {
-		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+	if rendered != want {
+		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, rendered)
 	}
 }
 
-func TestRangeMapperNilFunctionPanicsOnString(t *testing.T) {
+func TestRangeMapperNilFunctionPanicsOnCall(t *testing.T) {
 	defer func() {
 		recovered := recover()
 		if recovered == nil {
@@ -82,11 +86,7 @@ func TestRangeMapperNilFunctionPanicsOnString(t *testing.T) {
 	_ = Range([]int{1}, nil)
 }
 
-func TestRangeMapperReturningNilHTMLPanicsOnString(t *testing.T) {
-	r := Range([]int{1}, func(index int, item int) HTML {
-		return nil
-	})
-
+func TestRangeMapperReturningNilHTMLPanicsOnCall(t *testing.T) {
 	defer func() {
 		recovered := recover()
 		if recovered == nil {
@@ -98,5 +98,7 @@ func TestRangeMapperReturningNilHTMLPanicsOnString(t *testing.T) {
 		}
 	}()
 
-	_ = r.String()
+	_ = Range([]int{1}, func(index int, item int) HTML {
+		return nil
+	})
 }
