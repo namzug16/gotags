@@ -1,4 +1,7 @@
 
+## v0.2.0
+- Fragments now accept `...any` instead of `...HTML`
+
 ## v0.1.2
 - Fix `If` composition handling in `Fragment`
 
