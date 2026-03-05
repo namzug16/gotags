@@ -60,16 +60,33 @@ func TestFragmentCanBeComposedInsideTags(t *testing.T) {
 	}
 }
 
-func TestFragmentNilComponentPanicsOnString(t *testing.T) {
-	f := Fragment(Text("ok"), nil)
+func TestFragmentWithStringsAndHTMLSlicesNormalizesContent(t *testing.T) {
+	got := Fragment(
+		"before-",
+		[]HTML{Span("one"), Text("<two>")},
+		Raw("<i>three</i>"),
+	).String()
 
+	want := `before-<span>one</span>&lt;two&gt;<i>three</i>`
+	if got != want {
+		t.Fatalf("unexpected rendered HTML:\nwant: %q\ngot:  %q", want, got)
+	}
+}
+
+func TestFragmentInvalidChildTypePanicsWithContext(t *testing.T) {
 	defer func() {
-		if recover() == nil {
-			t.Fatal("expected panic when Fragment contains nil component")
+		recovered := recover()
+		if recovered == nil {
+			t.Fatal("expected panic when Fragment contains invalid child type")
+		}
+
+		want := "gotags: invalid child type int; expected string, HTML or []HTML; in Fragment"
+		if recovered != want {
+			t.Fatalf("unexpected panic message:\nwant: %q\ngot:  %v", want, recovered)
 		}
 	}()
 
-	_ = f.String()
+	_ = Fragment(123)
 }
 
 func TestFragmentTypedNilComponentPanicsOnString(t *testing.T) {

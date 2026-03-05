@@ -19,7 +19,7 @@ func (r *RangeComponent[T]) String() string {
 		components[i] = component
 	}
 
-	return Fragment(components...).String()
+	return Fragment(components).String()
 }
 
 func Range[T any](items []T, toComponent func(int, T) HTML) *RangeComponent[T] {

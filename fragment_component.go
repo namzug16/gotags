@@ -1,6 +1,8 @@
 package gotags
 
-import "strings"
+import (
+	"strings"
+)
 
 type FragmentComponent struct {
 	components []HTML
@@ -13,7 +15,7 @@ func (f *FragmentComponent) String() string {
 		ifComp, ok := c.(*IfComponent)
 		if ok {
 			if ifComp.condition {
-				sb.WriteString(Fragment(ifComp.components...).String())
+				sb.WriteString(Fragment(ifComp.components).String())
 			}
 
 			continue
@@ -25,8 +27,15 @@ func (f *FragmentComponent) String() string {
 	return sb.String()
 }
 
-func Fragment(components ...HTML) *FragmentComponent {
+func Fragment(components ...any) *FragmentComponent {
+
+	content, err := normalizeContent(components)
+
+	if err != nil {
+		panic(err.Error() + "; in Fragment")
+	}
+
 	return &FragmentComponent{
-		components: components,
+		components: content,
 	}
 }
