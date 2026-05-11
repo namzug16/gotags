@@ -1,4 +1,7 @@
 
+## v0.3.0
+- Add lazy evaluation to `If` component for optimized fragment rendering
+
 ## v0.2.0
 - Fragments now accept `...any` instead of `...HTML`
 
